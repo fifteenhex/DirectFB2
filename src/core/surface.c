@@ -68,7 +68,15 @@ dfb_surface_get_stereo_eye( CoreSurface *surface )
 static void
 keep_frame( CoreSurface *surface )
 {
-     CoreSurfaceBuffer *buffer = surface->left_buffers[surface->buffer_indices[surface->flips % surface->num_buffers]];
+     CoreSurfaceBuffer *buffer;
+
+     if (!surface->flips)
+          return;
+
+     if (!surface->num_buffers)
+          return;
+
+     buffer = surface->left_buffers[surface->buffer_indices[surface->flips % surface->num_buffers]];
 
      D_DEBUG_AT( Core_Surface, "%s( %p )\n", __FUNCTION__, surface );
 
