@@ -224,9 +224,9 @@ update_stack_geometry( CoreLayerContext *context )
           if (surface) {
                D_MAGIC_ASSERT( surface, CoreSurface );
 
-               rotation -= surface->rotation;
-               if (rotation < 0)
-                    rotation += 360;
+               //rotation -= surface->rotation;
+               //if (rotation < 0)
+               //     rotation += 360;
           }
      }
 
