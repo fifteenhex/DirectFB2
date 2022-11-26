@@ -599,6 +599,10 @@ drmkmsLock( CoreSurfacePool       *pool,
      lock->addr   = dfb_core_is_master( local->core ) ? alloc->addr : NULL;
      lock->phys   = 0;
 
+     // dgp, mmmmmm
+     if (shared->use_prime_fd)
+          lock->offset = alloc->prime_fd;
+
      switch (lock->accessor) {
           case CSAID_LAYER0:
                lock->handle = (void*)(long) alloc->fb_id;
@@ -606,8 +610,6 @@ drmkmsLock( CoreSurfacePool       *pool,
                break;
 
           case CSAID_GPU:
-               if (shared->use_prime_fd)
-                    lock->offset = alloc->prime_fd;
 
                lock->handle = (void*)(long) alloc->handle;
                D_DEBUG_AT( DRMKMS_Surfaces, "  -> primary accelerator buffer (handle %u)\n", alloc->handle );
