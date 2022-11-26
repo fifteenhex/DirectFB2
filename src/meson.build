@@ -199,6 +199,7 @@ install_headers(display_headers, subdir: 'directfb-internal/display')
 install_headers(gfx_headers,     subdir: 'directfb-internal/gfx')
 install_headers(media_headers,   subdir: 'directfb-internal/media')
 install_headers(misc_headers,    subdir: 'directfb-internal/misc')
+install_headers('../systems/drmkms/drmkms_system.h', subdir: 'directfb-internal/systems/drmkms')
 
 pkgconfig.generate(filebase: 'directfb',
                    name: 'DirectFB',
