@@ -660,7 +660,7 @@ dfb_surface_pool_notify( CoreSurface                  *surface,
         the associated CoreSurface's reactor. A copy of all the data needed by the listeners is done in order to wait
         for all the listeners to complete before the buffer allocation is destroyed along with all of its underlying
         data structures. */
-
+     memset( &notification, 0, sizeof(notification) );
      notification.flags             = flags;
      notification.surface           = surface;
      notification.buffer_no_access  = buffer;
