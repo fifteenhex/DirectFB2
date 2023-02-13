@@ -21,6 +21,9 @@
 
 #include "drmkms_system.h"
 
+/* Time out for flip assuming that almost everything can manage 5 fps */
+static const int         fliptimeout = 1000000 / 5;
+
 D_DEBUG_DOMAIN( DRMKMS_Layer, "DRMKMS/Layer", "DRM/KMS Layer" );
 
 /**********************************************************************************************************************/
@@ -273,8 +276,10 @@ drmkmsPrimaryUpdateFlipRegion( void                  *driver_data,
      while (data->flip_pending) {
           D_DEBUG_AT( DRMKMS_Layer, "  -> waiting for pending flip (previous)\n" );
 
-          if (direct_waitqueue_wait_timeout( &data->wq_event, &data->lock, 30000 ) == DR_TIMEOUT)
+          if (direct_waitqueue_wait_timeout( &data->wq_event, &data->lock, fliptimeout ) == DR_TIMEOUT) {
+               D_WARN( "Timeout waiting for previous flip to complete\n" );
                break;
+	  }
      }
 
      dfb_surface_ref( surface );
@@ -312,8 +317,10 @@ drmkmsPrimaryUpdateFlipRegion( void                  *driver_data,
           while (data->flip_pending) {
                D_DEBUG_AT( DRMKMS_Layer, "  -> waiting for pending flip (WAITFORSYNC)\n" );
 
-               if (direct_waitqueue_wait_timeout( &data->wq_event, &data->lock, 30000 ) == DR_TIMEOUT)
+               if (direct_waitqueue_wait_timeout( &data->wq_event, &data->lock, fliptimeout ) == DR_TIMEOUT) {
+                    D_WARN( "Timeout waiting for current flip to complete\n" );
                     break;
+               }
           }
      }
 
@@ -648,8 +655,10 @@ drmkmsPlaneUpdateFlipRegion( void                  *driver_data,
      while (data->flip_pending) {
           D_DEBUG_AT( DRMKMS_Layer, "  -> waiting for plane pending flip (previous)\n" );
 
-          if (direct_waitqueue_wait_timeout( &data->wq_event, &data->lock, 30000 ) == DR_TIMEOUT)
+          if (direct_waitqueue_wait_timeout( &data->wq_event, &data->lock, fliptimeout ) == DR_TIMEOUT) {
+               D_WARN( "Timeout waiting for previous flip to complete\n" );
                break;
+          }
      }
 
      dfb_surface_ref( surface );
@@ -685,8 +694,10 @@ drmkmsPlaneUpdateFlipRegion( void                  *driver_data,
           while (data->flip_pending) {
                D_DEBUG_AT( DRMKMS_Layer, "  -> waiting for plane pending flip (WAITFORSYNC)\n" );
 
-               if (direct_waitqueue_wait_timeout( &data->wq_event, &data->lock, 30000 ) == DR_TIMEOUT)
-                    break;
+               if (direct_waitqueue_wait_timeout( &data->wq_event, &data->lock, fliptimeout ) == DR_TIMEOUT) {
+                   D_WARN( "Timeout waiting for previous flip to complete\n" );
+                   break;
+               }
           }
      }
 
