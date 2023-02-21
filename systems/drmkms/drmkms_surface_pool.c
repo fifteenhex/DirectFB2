@@ -414,7 +414,8 @@ drmkmsAllocateBuffer( CoreSurfacePool       *pool,
      allocation->size   = alloc->size;
      allocation->offset = alloc->prime_fd;
 
-     if (surface->type & (CSTF_LAYER | CSTF_WINDOW) && Core_GetIdentity() == local->core->fusion_id) {
+     //| CSTF_WINDOW
+     if ((surface->type & (CSTF_LAYER)) && Core_GetIdentity() == local->core->fusion_id) {
           u32 handles[4] = { 0, 0, 0, 0 };
           u32 pitches[4] = { 0, 0, 0, 0 };
           u32 offsets[4] = { 0, 0, 0, 0 };
