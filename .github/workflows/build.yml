@@ -1,0 +1,37 @@
+name: Build
+run-name: ${{ github.actor }}
+on: [push]
+jobs:
+  build:
+    strategy:
+      matrix:
+        drmkms: [ "true", "false" ]
+        fbdev: [ "true", "false" ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install deps
+        run: sudo apt-get install meson pkg-config git
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Check out flux
+        uses: actions/checkout@v3
+        with:
+          repository: deniskropp/flux
+          path: _flux
+      - name: Build flux
+        working-directory: _flux
+        run: |
+          ./autogen.sh
+          ./configure
+          make
+          make install
+      - name: Setup
+        run: meson setup builddir
+      - name: Configure
+        run: |
+          meson configure
+          meson configure -Dfbdev=${{ matrix.fbdev }} -Ddrmkms=${{ matrix.drmkms }}
+        working-directory: builddir
+      - name: Compile
+        run: meson compile
+        working-directory: builddir
