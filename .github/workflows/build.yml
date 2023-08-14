@@ -5,6 +5,8 @@ jobs:
   build:
     strategy:
       matrix:
+        multi: [ "true", "false" ]
+        mmx: [ "true", "false" ]
         drmkms: [ "true", "false" ]
         fbdev: [ "true", "false" ]
     runs-on: ubuntu-latest
@@ -30,7 +32,10 @@ jobs:
       - name: Configure
         run: |
           meson configure
-          meson configure -Dfbdev=${{ matrix.fbdev }} -Ddrmkms=${{ matrix.drmkms }}
+          meson configure -Dmulti=${{ matrix.mmx }}
+          meson configure -Dmulti=${{ matrix.multi }}
+          meson configure -Dfbdev=${{ matrix.fbdev }}
+          meson configure -Ddrmkms=${{ matrix.drmkms }}
         working-directory: builddir
       - name: Compile
         run: meson compile
