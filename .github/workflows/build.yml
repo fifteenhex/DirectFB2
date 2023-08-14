@@ -9,6 +9,7 @@ jobs:
         mmx: [ "true", "false" ]
         drmkms: [ "true", "false" ]
         fbdev: [ "true", "false" ]
+        stereo: [ "true", "false" ]
     runs-on: ubuntu-latest
     steps:
       - name: Install deps
@@ -32,10 +33,11 @@ jobs:
       - name: Configure
         run: |
           meson configure
-          meson configure -Dmulti=${{ matrix.mmx }}
+          meson configure -Dmmx=${{ matrix.mmx }}
           meson configure -Dmulti=${{ matrix.multi }}
           meson configure -Dfbdev=${{ matrix.fbdev }}
           meson configure -Ddrmkms=${{ matrix.drmkms }}
+          meson configure -Dstereo=${{ matrix.stereo }}
         working-directory: builddir
       - name: Compile
         run: meson compile
