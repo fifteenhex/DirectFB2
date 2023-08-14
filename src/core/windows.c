@@ -390,7 +390,11 @@ dfb_window_create( CoreWindowStack             *stack,
           caps &= ~DWCAPS_SUBWINDOW;
 
      if (caps & DWCAPS_STEREO)
+#if USE_STEREO
           surface_caps |= DSCAPS_STEREO;
+else
+         return DFB_INVARG;
+#endif
 
      if (!dfb_config->translucent_windows) {
           caps &= ~DWCAPS_ALPHACHANNEL;

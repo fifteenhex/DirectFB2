@@ -93,6 +93,10 @@ option('smooth-scaling',
        type: 'boolean',
        description: 'Smooth scaling')
 
+option('stereo',
+       type: 'boolean',
+       description: 'Stereo, 3d, display support')
+
 option('text',
        type: 'boolean',
        description: 'Text output')

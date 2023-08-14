@@ -145,6 +145,7 @@ IDirectFBSurface_Layer_Flip( IDirectFBSurface    *thiz,
      return DFB_OK;
 }
 
+#if USE_STEREO
 static DFBResult
 IDirectFBSurface_Layer_FlipStereo( IDirectFBSurface    *thiz,
                                    const DFBRegion     *left_region,
@@ -235,6 +236,7 @@ IDirectFBSurface_Layer_FlipStereo( IDirectFBSurface    *thiz,
 
      return DFB_OK;
 }
+#endif
 
 static DFBResult
 IDirectFBSurface_Layer_GetSubSurface( IDirectFBSurface    *thiz,
@@ -361,7 +363,9 @@ IDirectFBSurface_Layer_Construct( IDirectFBSurface       *thiz,
 
      thiz->Release       = IDirectFBSurface_Layer_Release;
      thiz->Flip          = IDirectFBSurface_Layer_Flip;
+#if USE_STEREO
      thiz->FlipStereo    = IDirectFBSurface_Layer_FlipStereo;
+#endif
      thiz->GetSubSurface = IDirectFBSurface_Layer_GetSubSurface;
 
      return DFB_OK;

@@ -155,6 +155,7 @@ DFBResult IDirectFBSurface_Flip             ( IDirectFBSurface       *thiz,
                                               const DFBRegion        *region,
                                               DFBSurfaceFlipFlags     flags );
 
+#if USE_STEREO
 /*
  * flips left and right buffers
  */
@@ -162,6 +163,7 @@ DFBResult IDirectFBSurface_FlipStereo       ( IDirectFBSurface       *thiz,
                                               const DFBRegion        *left_region,
                                               const DFBRegion        *right_region,
                                               DFBSurfaceFlipFlags     flags );
+#endif
 
 /*
  * stops all drawing

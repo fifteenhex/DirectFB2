@@ -1878,8 +1878,10 @@ dfb_layer_context_allocate_surface( CoreLayer             *layer,
           if (config->options & DLOP_DEINTERLACING)
                caps |= DSCAPS_INTERLACED;
 
+#if USE_STEREO
           if (config->options & DLOP_STEREO)
                caps |= DSCAPS_STEREO;
+#endif
 
           /* Add available surface capabilities. */
           caps |= config->surface_caps & (DSCAPS_INTERLACED | DSCAPS_SEPARATED | DSCAPS_PREMULTIPLIED | DSCAPS_GL);
@@ -1904,8 +1906,10 @@ dfb_layer_context_allocate_surface( CoreLayer             *layer,
           if (config->buffermode == DLBM_BACKSYSTEM) {
                surface->left_buffers[1]->policy = CSP_SYSTEMONLY;
 
+#if USE_STEREO
                if (config->options & DLOP_STEREO)
                     surface->right_buffers[1]->policy = CSP_SYSTEMONLY;
+#endif
           }
      }
 
@@ -1984,8 +1988,10 @@ dfb_layer_context_reallocate_surface( CoreLayer             *layer,
      if (config->options & DLOP_DEINTERLACING)
           sconfig.caps |= DSCAPS_INTERLACED;
 
+#if USE_STEREO
      if (config->options & DLOP_STEREO)
           sconfig.caps |= DSCAPS_STEREO;
+#endif
 
      sconfig.size.w     = config->width;
      sconfig.size.h     = config->height;
@@ -2017,8 +2023,10 @@ dfb_layer_context_reallocate_surface( CoreLayer             *layer,
           case DLBM_BACKSYSTEM:
                surface->left_buffers[1]->policy = CSP_SYSTEMONLY;
 
+#if USE_STEREO
                if (config->options & DLOP_STEREO)
                     surface->right_buffers[1]->policy = CSP_SYSTEMONLY;
+#endif
                break;
 
           case DLBM_TRIPLE:

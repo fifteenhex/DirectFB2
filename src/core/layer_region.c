@@ -543,12 +543,14 @@ dfb_layer_region_flip_update( CoreLayerRegion     *region,
      if (dfb_layer_region_lock( region ))
           return DFB_FUSION;
 
+#if USE_STEREO
      /* Check for stereo region */
      if (region->config.options & DLOP_STEREO) {
           ret = dfb_layer_region_flip_update_stereo( region, update, update, flags );
           dfb_layer_region_unlock( region );
           return ret;
      }
+#endif
 
      D_ASSUME( region->surface != NULL );
 
@@ -724,6 +726,7 @@ out:
      return ret;
 }
 
+#if USE_STEREO
 DFBResult
 dfb_layer_region_flip_update_stereo( CoreLayerRegion     *region,
                                      const DFBRegion     *left_update,
@@ -948,6 +951,7 @@ out:
 
      return ret;
 }
+#endif
 
 DFBResult
 dfb_layer_region_flip_update2( CoreLayerRegion     *region,
@@ -957,8 +961,10 @@ dfb_layer_region_flip_update2( CoreLayerRegion     *region,
                                unsigned int         flip_count,
                                long long            pts )
 {
+#if USE_STEREO
      if (region->config.options & DLOP_STEREO)
           return dfb_layer_region_flip_update_stereo( region, left_update, right_update, flags );
+#endif
 
      return dfb_layer_region_flip_update( region, left_update, flags );
 }
@@ -1307,7 +1313,11 @@ region_buffer_lock( CoreLayerRegion       *region,
 
      D_ASSERT( left_buffer_lock->allocation != NULL );
 
+#if USE_STEREO
      stereo = surface->config.caps & DSCAPS_STEREO;
+#else
+     stereo = false;
+#endif
 
      if (stereo) {
           D_ASSERT( right_buffer_lock != NULL );

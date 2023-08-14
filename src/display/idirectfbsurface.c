@@ -481,6 +481,7 @@ IDirectFBSurface_SetAlphaRamp( IDirectFBSurface *thiz,
      return DFB_OK;
 }
 
+#if USE_STEREO
 static DFBResult
 IDirectFBSurface_GetStereoEye( IDirectFBSurface    *thiz,
                                DFBSurfaceStereoEye *ret_eye )
@@ -520,6 +521,7 @@ IDirectFBSurface_SetStereoEye( IDirectFBSurface    *thiz,
 
      return DFB_OK;
 }
+#endif
 
 static DFBResult
 IDirectFBSurface_Lock( IDirectFBSurface     *thiz,
@@ -757,6 +759,7 @@ IDirectFBSurface_Flip( IDirectFBSurface    *thiz,
      return DFB_OK;
 }
 
+#if USE_STEREO
 DFBResult
 IDirectFBSurface_FlipStereo( IDirectFBSurface    *thiz,
                              const DFBRegion     *left_region,
@@ -858,6 +861,7 @@ IDirectFBSurface_FlipStereo( IDirectFBSurface    *thiz,
 
      return DFB_OK;
 }
+#endif
 
 static DFBResult
 IDirectFBSurface_SetField( IDirectFBSurface *thiz,
@@ -3949,13 +3953,17 @@ IDirectFBSurface_Construct( IDirectFBSurface       *thiz,
      thiz->GetPalette             = IDirectFBSurface_GetPalette;
      thiz->SetPalette             = IDirectFBSurface_SetPalette;
      thiz->SetAlphaRamp           = IDirectFBSurface_SetAlphaRamp;
+#if USE_STEREO
      thiz->GetStereoEye           = IDirectFBSurface_GetStereoEye;
      thiz->SetStereoEye           = IDirectFBSurface_SetStereoEye;
+#endif
      thiz->Lock                   = IDirectFBSurface_Lock;
      thiz->GetFramebufferOffset   = IDirectFBSurface_GetFramebufferOffset;
      thiz->Unlock                 = IDirectFBSurface_Unlock;
      thiz->Flip                   = IDirectFBSurface_Flip;
+#if USE_STEREO
      thiz->FlipStereo             = IDirectFBSurface_FlipStereo;
+#endif
      thiz->SetField               = IDirectFBSurface_SetField;
      thiz->Clear                  = IDirectFBSurface_Clear;
      thiz->SetClip                = IDirectFBSurface_SetClip;

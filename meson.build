@@ -66,7 +66,11 @@ if host_machine.cpu_family() == 'arm' or host_machine.cpu_family() == 'aarch64'
   endif
 endif
 
-configure_file(configuration: config_conf, output: 'config.h')
+if get_option('stereo')
+  config_conf.set('USE_STEREO', 1, description: 'Define to 1 if you want support for stereo displays.')
+endif
+
+config_file = configure_file(configuration: config_conf, output: 'config.h')
 
 config_inc = include_directories('.')
 lib_inc = include_directories('lib')
@@ -74,6 +78,7 @@ directfb_inc = [include_directories('include', 'src'), lib_inc]
 
 add_global_arguments('-Wshadow'           , language: 'c')
 add_global_arguments('-Wstrict-prototypes', language: 'c')
+add_global_arguments('-include', '@0@'.format(config_file) , language: 'c')
 
 pkgconfig = import('pkgconfig')
 

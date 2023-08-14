@@ -491,6 +491,7 @@ ISurface_Real__Flip2( CoreSurface         *obj,
           r = l;
 
      if (obj->config.caps & DSCAPS_FLIPPING) {
+#if USE_STEREO
           if (obj->config.caps & DSCAPS_STEREO) {
                if ((flags & DSFLIP_SWAP) ||
                    (!(flags & DSFLIP_BLIT)         &&
@@ -514,6 +515,7 @@ ISurface_Real__Flip2( CoreSurface         *obj,
                }
           }
           else {
+#endif
                if ((flags & DSFLIP_SWAP) ||
                    (!(flags & DSFLIP_BLIT)         &&
                     l.x1 == 0 && l.y1 == 0         &&
@@ -527,7 +529,9 @@ ISurface_Real__Flip2( CoreSurface         *obj,
                     dfb_gfx_copy_regions_client( obj, DSBR_BACK, DSSE_LEFT, obj, DSBR_FRONT, DSSE_LEFT, &l,
                                                  1, 0, 0, NULL );
                }
+#if USE_STEREO
           }
+#endif
      }
 
      dfb_surface_dispatch_update( obj, &l, &r, timestamp, flags );

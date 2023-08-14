@@ -349,8 +349,10 @@ dfb_back_to_front_copy_stereo( CoreSurface         *surface,
      if (eyes & DSSE_LEFT)
           back_to_front_copy( surface, DSSE_LEFT, left_region, DSBLIT_NOFX, rotation );
 
+#if USE_STEREO
      if (eyes & DSSE_RIGHT)
           back_to_front_copy( surface, DSSE_RIGHT, right_region, DSBLIT_NOFX, rotation );
+#endif
 }
 
 void

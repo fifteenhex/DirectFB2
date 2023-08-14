@@ -838,7 +838,11 @@ IDirectFB_CreateSurface( IDirectFB                    *thiz,
                          wd.caps |= DWCAPS_DOUBLEBUFFER;
 
                     if (caps & DSCAPS_STEREO)
+#if USE_STEREO
                          wd.caps |= DWCAPS_STEREO;
+#else
+                         return DFB_INVARG;
+#endif
 
                     ret = CoreLayerContext_CreateWindow( data->context, &wd, &window );
                     if (ret)
@@ -903,8 +907,12 @@ IDirectFB_CreateSurface( IDirectFB                    *thiz,
                          config.buffermode = DLBM_FRONTONLY;
 
                     if (caps & DSCAPS_STEREO) {
+#if USE_STEREO
                          config.flags   |= DLCONF_OPTIONS;
                          config.options  = DLOP_STEREO;
+#else
+                         return DFB_INVARG;
+#endif
                     }
 
                     config.pixelformat = format;
