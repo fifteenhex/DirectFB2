@@ -270,7 +270,7 @@ system_initialize( CoreDFB  *core,
                    void    **ret_data )
 {
      DFBResult              ret;
-     int                    i, j, p;
+     int                    i, j;
      uint32_t               fourcc;
      char                   name[5];
      DRMKMSData            *drmkms;
@@ -278,6 +278,8 @@ system_initialize( CoreDFB  *core,
      FusionSHMPoolShared   *pool;
      const char            *value;
      drmModePlane          *plane;
+     drmModeObjectProperties *plane_props;
+     drmModePropertyRes    *plane_prop;
      VideoMode             *prev_mode       = NULL;
      DFBSurfacePixelFormat  fallback_format = DSPF_UNKNOWN;
 
@@ -357,26 +359,53 @@ system_initialize( CoreDFB  *core,
      for (i = 0; i < drmkms->enabled_crtcs; i++)
           shared->mode[i] = drmkms->connector[0]->modes[0];
 
-     for (p = 0; p < drmkms->plane_resources->count_planes; p++) {
-          plane = drmModeGetPlane( drmkms->fd, drmkms->plane_resources->planes[p] );
-          for (i = 0; i < plane->count_formats; i++) {
-               fourcc = plane->formats[i];
-               snprintf( name, sizeof(name), "%c%c%c%c", fourcc, fourcc >> 8, fourcc >> 16, fourcc >> 24 );
+     /* Find the primary plane */
+     ret = DFB_INIT;
+     for (i = 0; i < drmkms->plane_resources->count_planes; i++) {
+          plane = drmModeGetPlane( drmkms->fd, drmkms->plane_resources->planes[i] );
+          plane_props = drmModeObjectGetProperties( drmkms->fd,
+                  drmkms->plane_resources->planes[i], DRM_MODE_OBJECT_PLANE );
+          for ( j = 0; j < plane_props->count_props; j++ ) {
+                plane_prop = drmModeGetProperty( drmkms->fd,
+                        plane_props->props[j]);
+                if ( strcmp(plane_prop->name, "type" ) == 0) {
+                    if ( plane_props->prop_values[j] == DRM_PLANE_TYPE_PRIMARY) {
+                        ret = DFB_OK;
+                    }
+                }
+                drmModeFreeProperty( plane_prop );
+          }
+          drmModeFreeObjectProperties ( plane_props );
+          if (ret == DFB_OK)
+              break;
+          drmModeFreePlane ( plane );
+     }
 
-               if (!strcmp( name, "AR24" )) {
-                    shared->primary_format = DSPF_ARGB;
-                    break;
-               }
-               else if (fallback_format == DSPF_UNKNOWN) {
-                    for (j = 1; j < D_ARRAY_SIZE(dfb_fourcc_names); j++) {
-                         if (!strcmp( name, dfb_fourcc_names[j].name )) {
-                              fallback_format = dfb_fourcc_names[j].format;
-                              break;
-                         }
+     if (ret != DFB_OK ) {
+          D_ERROR( "DRMKMS/System: Couldn't find primary layer to work out format!\n" );
+          goto error;
+     }
+
+     for (i = 0; i < plane->count_formats; i++) {
+          fourcc = plane->formats[i];
+          snprintf( name, sizeof(name), "%c%c%c%c", fourcc, fourcc >> 8, fourcc >> 16, fourcc >> 24 );
+
+          if (!strcmp( name, "AR24" )) {
+              printf("here 1!\n");
+               shared->primary_format = DSPF_ARGB;
+               break;
+          }
+          else if (fallback_format == DSPF_UNKNOWN) {
+               for (j = 1; j < D_ARRAY_SIZE(dfb_fourcc_names); j++) {
+                    if (!strcmp( name, dfb_fourcc_names[j].name )) {
+                         fallback_format = dfb_fourcc_names[j].format;
+                         printf("here 2! %s\n", dfb_fourcc_names[j].name);
+                         break;
                     }
                }
           }
      }
+     drmModeFreePlane (plane);
 
      if (shared->primary_format != DSPF_ARGB && fallback_format == DSPF_UNKNOWN) {
           D_ERROR( "DRMKMS/System: No supported format!\n" );
