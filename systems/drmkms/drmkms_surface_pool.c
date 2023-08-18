@@ -368,11 +368,19 @@ drmkmsAllocateBuffer( CoreSurfacePool       *pool,
      memset( &creq, 0, sizeof(creq) );
      creq.width  = width;
      creq.height = height;
-     creq.bpp    = 32;
+     creq.bpp    = DFB_BITS_PER_PIXEL(surface->config.format);
      if (drmIoctl( drmkms->fd, DRM_IOCTL_MODE_CREATE_DUMB, &creq ) < 0) {
           ret = errno2result( errno );
-          D_PERROR( "DRMKMS/Surfaces: DRM_IOCTL_MODE_CREATE_DUMB( %ux%u ) failed!\n", width, height );
-          goto error;
+          D_PERROR( "DRMKMS/Surfaces: DRM_IOCTL_MODE_CREATE_DUMB( %ux%u ) failed with bpp = %d!\n", width, height, creq.bpp );
+
+          /* Try again with 32, the virtio DRM driver seems to require this.. */
+          creq.bpp = 32;
+          if (drmIoctl( drmkms->fd, DRM_IOCTL_MODE_CREATE_DUMB, &creq ) < 0) {
+               ret = errno2result( errno );
+               D_PERROR( "DRMKMS/Surfaces: DRM_IOCTL_MODE_CREATE_DUMB( %ux%u ) failed with bpp = %d!\n", width, height, creq.bpp );
+
+               goto error;
+          }
      }
 
      alloc->handle = creq.handle;
